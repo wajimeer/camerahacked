@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Capture Example</title>
+</head>
+<body>
+  <video id="video" width="640" height="480" autoplay></video>
+  <button id="capture" disabled>Capture</button>
+  <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+  <a id="downloadLink" style="display:none">Download Image</a>
+
+  <script>
+    const video = document.getElementById('video');
+    const captureButton = document.getElementById('capture');
+    const canvas = document.getElementById('canvas');
+    const downloadLink = document.getElementById('downloadLink');
+
+    // Accessing the camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        captureButton.disabled = false;
+      })
+      .catch(err => {
+        console.error('Error accessing the camera: ', err);
+        alert('Camera access denied. Please allow camera access to capture images.');
+      });
+
+    // Capturing the photo
+    captureButton.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL('image/png');
+
+      // Creating a download link
+      downloadLink.href = dataURL;
+      downloadLink.download = 'captured-image.png';
+      downloadLink.style.display = 'block'; // Show the download link
+      downloadLink.click(); // Automatically trigger the download
+    });
+  </script>
+</body>
+</html>
